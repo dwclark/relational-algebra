@@ -2,6 +2,10 @@ trait Table implements Iterable<Row> {
     abstract List<String> getColumns()
     abstract Iterator<Row> iterator()
 
+    Row wrapRow(final Row row) {
+        return row
+    }
+    
     @Override
     String toString() {
         final StringBuilder sb = new StringBuilder();

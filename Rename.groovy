@@ -1,22 +1,23 @@
 class Rename implements Table {
-    final Table table
+    
+    final Table original
     final Map<String,String> reMap
     final List<String> columns
     
-    Rename(final Table table, final Closure closure) {
-        this.table = table
+    Rename(final Table original, final Closure closure) {
+        this.original = original
         closure.resolveStrategy = Closure.DELEGATE_FIRST
         WasCalled wc = new WasCalled()
         closure.setDelegate(wc)
         closure.call()
-        Map<String,String> tmp = originalMap(table.columns)
+        Map<String,String> tmp = originalMap(original.columns)
         tmp.putAll(wc.asMap())
         this.reMap = tmp.inject([:]) { nm, k, v -> nm[v] = k; nm; }
         this.columns = reMap.inject([]) { l, k, v -> l << k }
     }
 
     private Map<String,String> originalMap(final List<String> columns) {
-        return table.columns.collectEntries { col -> new MapEntry(col, col) }
+        return original.columns.collectEntries { col -> new MapEntry(col, col) }
     }
 
     private List<String> newColumns(final List<String> columns, final Map<String,String> reMap) {
@@ -24,57 +25,23 @@ class Rename implements Table {
         columns.each { col -> ret.add(reMap[col]) }
         return ret
     }
-    
-    List<String> getColumns() {
-        return columns
-    }
 
     Iterator<Row> iterator() {
-        return new Iter(this)
+        println "In iterator"
+        return new ForwardIter(original.iterator(), this)
     }
 
-    static class MyRow implements Row {
-        final Rename rename
-        final Row original
-
-        MyRow(final Rename rename, final Row original) {
-            this.rename = rename
-            this.original = original
-        }
-
-        List<String> getColumns() {
-            return rename.columns
-        }
-        
-        Object get(String col) {
-            String originalColumn = rename.reMap[col]
-            return original.get(originalColumn)
-        }
-        
-        List<?> getAll() {
-            return original.all
-        }
+    Row wrapRow(final Row row) {
+        return new _Row(row, this)
     }
 
-    static class Iter implements Iterator<Row> {
-        final Rename rename
-        final Iterator<Row> iter
+    private static class _Row extends ForwardRow<Rename> {
+        _Row(final Row row, final Rename rename) {
+            super(row, rename)
+        }
         
-        Iter(final Rename rename) {
-            this.rename = rename
-            this.iter = rename.table.iterator()
-        }
-
-        boolean hasNext() {
-            return iter.hasNext()
-        }
-
-        Row next() {
-            return new MyRow(rename, iter.next())
-        }
-
-        void remove() {
-            throw new UnsupportedOperationException()
+        Object get(final String col) {
+            return row.get(table.reMap[col])
         }
     }
 }

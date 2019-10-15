@@ -2,6 +2,12 @@ import static Constants.*
 
 originalColumns = ['sid', 'sname', 'gradYear', 'majorId' ]
 
+majors = [ 10: 'English', 20: 'Physics', 30: 'Computer Science' ]
+
+mapMajorIds = { row -> majors[row.majorId] }
+upperCaseName = { row -> row.sname.toUpperCase() }
+yearsSinceGraduation = { row -> (new Date().year + 1900) - row.gradYear }
+
 listStudents =
     [[ 1, 'joe', 2004, 10 ],
      [ 2, 'amy', 2004, 20 ],
@@ -37,3 +43,5 @@ selectProject = new Project(select, { sname; gradYear })
 renamed = new Rename(students, { sid; studentId; sname; studentName; })
 
 sorted = new Sort(dupStudents, { sname; gradYear desc; })
+
+extended = new Extend(students, [ major: mapMajorIds, yearsSinceGraduation: yearsSinceGraduation ])

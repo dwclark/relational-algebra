@@ -16,45 +16,14 @@ class Project implements Table {
         return wc.order
     }
     
-    List<String> getColumns() {
-        return columns
-    }
-    
     Iterator<Row> iterator() {
-        return new Iter(table.iterator())
+        return new ForwardIter(table.iterator(), this)
     }
 
-    private class Iter implements Iterator<Row> {
-        final Iterator<Row> iter
-
-        Iter(final Iterator<Row> iter) {1
-            this.iter = iter
-        }
-
-        boolean hasNext() {
-            return iter.hasNext()
-        }
-
-        Row next() {
-            return new MyRow(iter.next(), columns)
-        }
-
-        void remove() {
-            throw new UnsupportedOperationException()
-        }
-    }
-    
-    private static class MyRow implements Row {
-        final Row _row
-        final List<String> _columns
+    private static class MyRow extends ForwardRow<Project> {
         
-        MyRow(final Row row, final List<String> columns) {
-            _row = row
-            _columns = columns
-        }
-        
-        List<String> getColumns() {
-            return _columns
+        MyRow(final Row row, final Project projection) {
+            super(row, projection)
         }
         
         Object get(String col) {
@@ -64,12 +33,6 @@ class Project implements Table {
             else {
                 throw new UnsupportedOperationException()
             }
-        }
-        
-        List<?> getAll() {
-            List<?> ret = new ArrayList<>(_columns.size())
-            _columns.each { col -> ret.add(_row.get(col)) }
-            return ret
         }
     }
 }
