@@ -19,6 +19,7 @@ class GroupBy extends RowTable {
     private static List<List<?>> _grouping(final Table table, final Closure fields,
                                            final Map<String,Closure> aggregates) {
         Map<Group,List<Row>> grouped = _grouped(table, _groupFields(fields))
+        _compute(grouped, aggregates)
     }
 
     private static Map<Group,List<Row>> _grouped(final Table table, final List<String> groupFields) {
@@ -31,18 +32,28 @@ class GroupBy extends RowTable {
 
     private static List<List<?>> _compute(final Map<Group,List<Row>> grouped,
                                           final Map<String,Closure> aggregates) {
+        List<Closure> functions = _functions(aggregates)
         grouped.inject([]) { retList, group, rows ->
-            retList << aggregates.inject(new ArrayList(group.values)) { rowList, closure ->
-                rowList << closure.call(rows)
+            retList << functions.inject(new ArrayList(group.values)) { rowList, func ->
+                rowList << func.call(rows)
             }
         }
     }
 
-    private class Group {
-        List<?> values = []
+    private static List<Closure> _functions(final Map<String,Closure> aggregates) {
+        final Aggregates a = new Aggregates()
+        aggregates.inject([]) { ret, name, tmpClosure ->
+            tmpClosure.resolveStrategy = Closure.DELEGATE_FIRST
+            tmpClosure.setDelegate(a)
+            ret << tmpClosure.call()
+        }
+    }
 
-        Group(final Row row) {
-            values = groupFields.inject([]) { list, field -> row.get(field) }
+    private static class Group {
+        final List<?> values
+
+        Group(final List<?> values) {
+            this.values = values
         }
 
         int hashCode() {

@@ -21,38 +21,22 @@ class Aggregates {
         }
     }
 
-    private Object _first(List<Row> rows, final String field) {
-        def firstRow = rows.find { row -> row.get(field) != null }
-        if(firstRow == null) return null
-        else return firstRow.get(field)
+    final static Comparator<Row> cmp = { Row row1, Row row2 ->
+        def a = row1.get(field)
+        def b = row2.get(field)
+        
+        if(a == null && b == null) return 0
+        else if(a == null) return -1
+        else if(b == null) return 1
+        else return a <=> b
     }
-
+    
     Closure min(final String field) {
-        return { List<Row> rows ->
-            def theMin = _first(rows, field)
-            if(theMin == null) return theMin
-            
-            rows.each { row ->
-                def val = row.get(field)
-                if(val != null && val < theMin) theMin = val
-            }
-
-            return theMin
-        }
+        return { List<Row> rows -> rows.min(cmp) }
     }
 
     Closure max(final String field) {
-        return { List<Row> rows ->
-            def theMax = _first(rows, field)
-            if(theMax == null) return theMax
-            
-            rows.each { row ->
-                def val = row.get(field)
-                if(val != null && val > theMax) theMax = val
-            }
-
-            return theMax
-        }
+        return { List<Row> rows -> rows.max(cmp) }
     }
 
     Closure avg(final String field) {

@@ -1,7 +1,7 @@
 import static Constants.*
 
-originalColumns = ['sid', 'sname', 'gradYear', 'majorId' ]
-
+studentColumns = ['sid', 'sname', 'gradYear', 'majorId' ]
+gradeColumns = [ 'cid', 'studentId', 'grade' ]
 majors = [ 10: 'English', 20: 'Physics', 30: 'Computer Science' ]
 
 mapMajorIds = { row -> majors[row.majorId] }
@@ -30,9 +30,22 @@ dupListStudents =
      [ 8, 'pat', 2001, 20 ],
      [ 9, 'bob', 2004, 10 ] ]
 
-students = new RowTable(originalColumns, listStudents)
+listGrades =
+    [[ 10, 1, 95 ],
+     [ 10, 2, 87 ],
+     [ 10, 3, 60 ],
+     [ 10, 4, 90 ],
+     [ 10, 5, 77 ],
+     [ 10, 6, 60 ],
+     [ 10, 7, 85 ],
+     [ 10, 8, 97 ],
+     [ 10, 9, 80 ] ]
 
-dupStudents = new RowTable(originalColumns, dupListStudents)
+students = new RowTable(studentColumns, listStudents)
+
+grades = new RowTable(gradeColumns, listGrades)
+
+dupStudents = new RowTable(studentColumns, dupListStudents)
 
 select = new Select(students, { majorId == 10 })
 
@@ -45,3 +58,13 @@ renamed = new Rename(students, { sid; studentId; sname; studentName; })
 sorted = new Sort(dupStudents, { sname; gradYear desc; })
 
 extended = new Extend(students, [ major: mapMajorIds, yearsSinceGraduation: yearsSinceGraduation ])
+
+grouped = new GroupBy(students, { gradYear }, [ totalMajors: { count(majorId) } ])
+
+product = new Product(students, grades)
+
+join = new Join(students, grades, { sid == studentId })
+
+union = new Union(students, dupStudents)
+
+//TODO: semijoin, antijoin, outerjoin
