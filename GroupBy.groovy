@@ -1,11 +1,15 @@
 class GroupBy extends RowTable {
     GroupBy(final Table table, Closure fields, Map<String,Closure> aggregates) {
-        super(_columns(fields, aggregates), _grouping(table, fields, aggregates))
+        this(table, _groupFields(fields), aggregates)
     }
 
-    private static List<String> _columns(final Closure fields,
+    GroupBy(final Table table, final List<String> groupFields, Map<String,Closure> aggregates){
+        super(_columns(groupFields, aggregates), _grouping(table, groupFields, aggregates))
+    }
+
+    private static List<String> _columns(final List<String> groupFields,
                                          final Map<String,Closure> aggregates) {
-        return [ _groupFields(fields), aggregates.keySet() ].flatten()
+        return [ groupFields, aggregates.keySet() ].flatten()
     }
 
     private static List<String> _groupFields(Closure fields) {
@@ -16,9 +20,9 @@ class GroupBy extends RowTable {
         return wc.order
     }
     
-    private static List<List<?>> _grouping(final Table table, final Closure fields,
+    private static List<List<?>> _grouping(final Table table, final List<String> groupFields,
                                            final Map<String,Closure> aggregates) {
-        Map<Group,List<Row>> grouped = _grouped(table, _groupFields(fields))
+        Map<Group,List<Row>> grouped = _grouped(table, groupFields)
         _compute(grouped, aggregates)
     }
 

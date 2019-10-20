@@ -67,4 +67,24 @@ join = new Join(students, grades, { sid == studentId })
 
 union = new Union(students, dupStudents)
 
-//TODO: semijoin, antijoin, outerjoin
+partialGrades = new Select(grades, { studentId > 3 })
+
+semiJoin = new SemiJoin(students, partialGrades, { sid == studentId })
+
+antiJoin = new AntiJoin(students, partialGrades, { sid == studentId })
+
+disjointListGrades =
+    [[ 10, 0, 95 ],
+     [ 10, 2, 87 ],
+     [ 10, 3, 60 ],
+     [ 10, 4, 90 ],
+     [ 10, 5, 77 ],
+     [ 10, 6, 60 ],
+     [ 10, 7, 85 ],
+     [ 10, 8, 97 ],
+     [ 10, 10, 80 ] ]
+
+//TODO: outerjoin
+disjointGrades = new RowTable(gradeColumns, disjointListGrades)
+
+outerJoin = new OuterJoin(students, disjointGrades, { sid == studentId })
