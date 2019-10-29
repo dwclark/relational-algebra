@@ -41,6 +41,17 @@ listGrades =
      [ 10, 8, 97 ],
      [ 10, 9, 80 ] ]
 
+disjointListGrades =
+    [[ 10, 0, 95 ],
+     [ 10, 2, 87 ],
+     [ 10, 3, 60 ],
+     [ 10, 4, 90 ],
+     [ 10, 5, 77 ],
+     [ 10, 6, 60 ],
+     [ 10, 7, 85 ],
+     [ 10, 8, 97 ],
+     [ 10, 10, 80 ] ]
+
 students = new RowTable(studentColumns, listStudents)
 
 grades = new RowTable(gradeColumns, listGrades)
@@ -68,17 +79,6 @@ union = students.union(dupStudents)
 semiJoin = students.semiJoin(grades.select { studentId > 3 }, { sid == studentId })
 
 antiJoin = students.antiJoin(grades.select { studentId > 3 }, { sid == studentId })
-
-disjointListGrades =
-    [[ 10, 0, 95 ],
-     [ 10, 2, 87 ],
-     [ 10, 3, 60 ],
-     [ 10, 4, 90 ],
-     [ 10, 5, 77 ],
-     [ 10, 6, 60 ],
-     [ 10, 7, 85 ],
-     [ 10, 8, 97 ],
-     [ 10, 10, 80 ] ]
 
 disjointGrades = new RowTable(gradeColumns, disjointListGrades)
 
