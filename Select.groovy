@@ -1,4 +1,4 @@
-class Select implements Table {
+class Select extends InMemoryTable {
     final Table table
     final Closure criteria
     

@@ -1,10 +1,10 @@
 class ForwardIter implements Iterator<Row> {
     final Iterator<Row> iter
-    final Table table
+    final Closure<Row> wrapper;
     
-    ForwardIter(final Iterator<Row> iter, final Table table) {
+    ForwardIter(final Iterator<Row> iter, final Closure<Row> wrapper) {
         this.iter = iter
-        this.table = table
+        this.wrapper = wrapper
     }
     
     boolean hasNext() {
@@ -12,7 +12,7 @@ class ForwardIter implements Iterator<Row> {
     }
     
     Row next() {
-        return table.wrapRow(iter.next())
+        return wrapper.call(iter.next())
     }
     
     void remove() {

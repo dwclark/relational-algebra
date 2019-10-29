@@ -1,8 +1,8 @@
-abstract class ForwardRow<T extends Table> implements Row {
+abstract class ForwardRow implements Row {
     final Row row
-    final T table
+    final Table table
 
-    ForwardRow(final Row row, final T table) {
+    ForwardRow(final Row row, final Table table) {
         this.row = row
         this.table = table
     }

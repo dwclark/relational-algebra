@@ -1,9 +1,9 @@
-class Extend implements Table {
+class Extend extends InMemoryTable {
 
     final Table original
     final Map<String,Closure> reMap
     final List<String> columns
-    
+
     Extend(final Table original, final Map<String,Closure> reMap) {
         this.original = original
         this.reMap = reMap
@@ -13,17 +13,16 @@ class Extend implements Table {
         this.columns = tmp
     }
 
-    Row wrapRow(final Row row) {
-        return new MyRow(row, this)
-    }
-
     Iterator<Row> iterator() {
-        new ForwardIter(original.iterator(), this)
+        new ForwardIter(original.iterator(), { Row r -> new _Row(r, this)})
     }
-
-    private static class MyRow extends ForwardRow<Extend> {
-        MyRow(final Row row, final Extend extend) {
+    
+    private static class _Row extends ForwardRow {
+        final Extend table
+        
+        _Row(final Row row, final Extend extend) {
             super(row, extend)
+            table = extend
         }
         
         Object get(final String col) {

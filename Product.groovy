@@ -1,4 +1,4 @@
-class Product implements Table {
+class Product extends InMemoryTable {
     final Table left
     final Table right
     final List<String> columns

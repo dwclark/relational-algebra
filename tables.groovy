@@ -84,7 +84,6 @@ disjointListGrades =
      [ 10, 8, 97 ],
      [ 10, 10, 80 ] ]
 
-//TODO: outerjoin
 disjointGrades = new RowTable(gradeColumns, disjointListGrades)
 
 outerJoin = new OuterJoin(students, disjointGrades, { sid == studentId })

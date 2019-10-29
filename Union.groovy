@@ -1,4 +1,4 @@
-class Union implements Table {
+class Union extends InMemoryTable {
     final List<String> columns
     final Set<Row> rows
     

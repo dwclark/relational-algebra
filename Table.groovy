@@ -1,17 +1,17 @@
-trait Table implements Iterable<Row> {
-    abstract List<String> getColumns()
-    abstract Iterator<Row> iterator()
+interface Table extends Iterable<Row> {
+    List<String> getColumns()
+    Iterator<Row> iterator()
+    Table select(Closure criteria)
+    Table project(Closure criteria)
+    Table sort(Closure criteria)
+    Table rename(Closure criteria)
+    Table extend(Map<String,Closure> reMap)
+    Table groupBy(Closure fields, Map<String,Closure> aggregates)
 
-    Row wrapRow(final Row row) {
-        return row
-    }
-    
-    @Override
-    String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(System.lineSeparator())
-        sb.append(columns.join(',')).append(System.lineSeparator())
-        each { r -> sb.append(r.all.join(',')).append(System.lineSeparator()) }
-        return sb.toString()
-    }
+    Table product(Table right)
+    Table join(Table right, Closure criteria)
+    Table semiJoin(Table right, Closure criteria)
+    Table antiJoin(Table right, Closure criteria)
+    Table union(Table right)
+    Table outerJoin(Table right, Closure criteria)
 }

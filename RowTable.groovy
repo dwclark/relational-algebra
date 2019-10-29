@@ -1,4 +1,4 @@
-class RowTable implements Table {
+class RowTable extends InMemoryTable {
     final List<String> columns
     final List<List<?>> rows
     final Map<String,Integer> columnMap

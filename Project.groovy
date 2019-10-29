@@ -1,4 +1,4 @@
-class Project implements Table {
+class Project extends InMemoryTable {
     final Table table
     final List<String> columns
     
@@ -17,18 +17,20 @@ class Project implements Table {
     }
     
     Iterator<Row> iterator() {
-        return new ForwardIter(table.iterator(), this)
+        return new ForwardIter(table.iterator(), { Row r -> new _Row(r, this) })
     }
 
-    private static class MyRow extends ForwardRow<Project> {
+    private static class _Row extends ForwardRow {
+        final Project project
         
-        MyRow(final Row row, final Project projection) {
-            super(row, projection)
+        _Row(Row row, Project project) {
+            super(row, project)
+            this.project = project
         }
-        
-        Object get(String col) {
-            if(_columns.contains(col)) {
-                return _row.get(col)
+
+        public Object get(final String col) {
+            if(project.columns.contains(col)) {
+                return row.get(col)
             }
             else {
                 throw new UnsupportedOperationException()

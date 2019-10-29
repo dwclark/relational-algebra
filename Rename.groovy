@@ -1,4 +1,4 @@
-class Rename implements Table {
+class Rename extends InMemoryTable {
     
     final Table original
     final Map<String,String> reMap
@@ -27,15 +27,14 @@ class Rename implements Table {
     }
 
     Iterator<Row> iterator() {
-        println "In iterator"
-        return new ForwardIter(original.iterator(), this)
+        return new ForwardIter(original.iterator(), { Row r -> new _Row(r, this) })
     }
 
     Row wrapRow(final Row row) {
         return new _Row(row, this)
     }
 
-    private static class _Row extends ForwardRow<Rename> {
+    private static class _Row extends ForwardRow {
         _Row(final Row row, final Rename rename) {
             super(row, rename)
         }
