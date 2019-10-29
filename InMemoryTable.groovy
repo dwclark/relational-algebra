@@ -18,7 +18,7 @@ abstract class InMemoryTable implements Table {
     }
     
     Table sort(Closure criteria) {
-        return new Sort(this, critieria)
+        return new Sort(this, criteria)
     }
     
     Table rename(Closure criteria) {

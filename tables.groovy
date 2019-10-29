@@ -47,31 +47,27 @@ grades = new RowTable(gradeColumns, listGrades)
 
 dupStudents = new RowTable(studentColumns, dupListStudents)
 
-select = new Select(students, { majorId == 10 })
+project = students.project { sname; gradYear }
 
-project = new Project(students, { sname; gradYear })
+selectProject = students.select { majorId == 10 }.project { sname; gradYear }
 
-selectProject = new Project(select, { sname; gradYear })
+renamed = students.rename { sid; studentId; sname; studentName; }
 
-renamed = new Rename(students, { sid; studentId; sname; studentName; })
+sorted = dupStudents.sort { sname; gradYear desc; }
 
-sorted = new Sort(dupStudents, { sname; gradYear desc; })
+extended = students.extend([ major: mapMajorIds, yearsSinceGraduation: yearsSinceGraduation ])
 
-extended = new Extend(students, [ major: mapMajorIds, yearsSinceGraduation: yearsSinceGraduation ])
+grouped = students.groupBy({ gradYear }, [ totalMajors: { count(majorId) } ])
 
-grouped = new GroupBy(students, { gradYear }, [ totalMajors: { count(majorId) } ])
+product = students.product(grades)
 
-product = new Product(students, grades)
+join = students.join(grades) { sid == studentId }
 
-join = new Join(students, grades, { sid == studentId })
+union = students.union(dupStudents)
 
-union = new Union(students, dupStudents)
+semiJoin = students.semiJoin(grades.select { studentId > 3 }, { sid == studentId })
 
-partialGrades = new Select(grades, { studentId > 3 })
-
-semiJoin = new SemiJoin(students, partialGrades, { sid == studentId })
-
-antiJoin = new AntiJoin(students, partialGrades, { sid == studentId })
+antiJoin = students.antiJoin(grades.select { studentId > 3 }, { sid == studentId })
 
 disjointListGrades =
     [[ 10, 0, 95 ],
@@ -86,4 +82,4 @@ disjointListGrades =
 
 disjointGrades = new RowTable(gradeColumns, disjointListGrades)
 
-outerJoin = new OuterJoin(students, disjointGrades, { sid == studentId })
+outerJoin = students.outerJoin(disjointGrades) { sid == studentId }
